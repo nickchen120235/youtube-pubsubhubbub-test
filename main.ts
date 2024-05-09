@@ -35,6 +35,10 @@ Deno.serve(async (req) => {
                 return new Response(null, { status: 400 })
             }
         }
-        default: return new Response(null, { status: 405 })
+        default: {
+            console.log('Received unknown request')
+            console.log(`${req.method} ${req.url}`)
+            return new Response(null, { status: 405 })
+        }
     }
 })
