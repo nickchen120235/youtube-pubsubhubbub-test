@@ -1,4 +1,6 @@
 import { xml } from './core.ts'
+import { _Notification } from "./types.ts"
+import { parseNotification } from "./parse.ts"
 
 Deno.serve(async (req) => {
     switch (req.method) {
@@ -20,9 +22,11 @@ Deno.serve(async (req) => {
             console.log(`URL: ${req.url}`)
             try {
                 const body = await req.text()
-                console.log(`Body: ${body}`)
-                const notification = xml.parse(body)
-                console.log(`Notification: ${JSON.stringify(notification)}`)
+                const notification = parseNotification(xml.parse(body)['feed'] as unknown as _Notification)
+                console.log(`Channel Name: ${notification.channelName}`)
+                console.log(`Video URL: ${notification.videoUrl}`)
+                console.log(`Published: ${notification.published}`)
+                console.log(`Updated: ${notification.updated}`)
                 return new Response(null, { status: 200 })
             }
             catch (e) {
