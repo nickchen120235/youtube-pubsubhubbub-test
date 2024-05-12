@@ -1,6 +1,11 @@
-import { xml } from './core.ts'
+import { xml, dotenv } from './core.ts'
 import { _Notification } from "./types.ts"
 import { parseNotification } from "./parse.ts"
+
+await dotenv.load({ export: true })
+const webhook = Deno.env.get('WEBHOOK')
+if (!webhook)
+    throw new Error('WEBHOOK environment variable not set')
 
 Deno.serve(async (req) => {
     switch (req.method) {
@@ -27,6 +32,16 @@ Deno.serve(async (req) => {
                 console.log(`Video URL: ${notification.videoUrl}`)
                 console.log(`Published: ${notification.published}`)
                 console.log(`Updated: ${notification.updated}`)
+                await fetch(webhook, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        content: `Video URL: ${notification.videoUrl}\nPublished: ${notification.published}\nUpdated: ${notification.updated}`,
+                        username: notification.channelName
+                    })
+                })
                 return new Response(null, { status: 200 })
             }
             catch (e) {
