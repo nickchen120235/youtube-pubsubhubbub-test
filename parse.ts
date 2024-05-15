@@ -1,6 +1,15 @@
-import { _Notification, Notification } from "./types.ts";
+import { _Notification, Notification, isRawNotification } from "./types.ts";
 
-export function parseNotification(notification: _Notification): Notification {
+class ParseError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'ParseError'
+  }
+}
+
+export function parseNotification(notification: unknown): Notification {
+  if (!isRawNotification(notification))
+      throw new ParseError(`Invalid notification: ${JSON.stringify(notification)}`)
   const entry = Array.isArray(notification.entry) ? notification.entry[0] : notification.entry
   return {
     channelId: notification['yt:channelId'],

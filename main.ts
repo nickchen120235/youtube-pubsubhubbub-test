@@ -1,5 +1,4 @@
 import { xml, dotenv } from './core.ts'
-import { _Notification } from "./types.ts"
 import { parseNotification } from "./parse.ts"
 
 await dotenv.load({ export: true })
@@ -27,7 +26,7 @@ Deno.serve(async (req) => {
             console.log(`URL: ${req.url}`)
             try {
                 const body = await req.text()
-                const notification = parseNotification(xml.parse(body)['feed'] as unknown as _Notification)
+                const notification = parseNotification(xml.parse(body)['feed'])
                 console.log(`Channel Name: ${notification.channelName}`)
                 console.log(`Video URL: ${notification.videoUrl}`)
                 console.log(`Published: ${notification.published}`)
