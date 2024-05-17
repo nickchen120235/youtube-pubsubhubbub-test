@@ -21,7 +21,10 @@ Deno.serve(async (req) => {
             const challenge = url.searchParams.get('hub.challenge')
             const lease = url.searchParams.get('hub.lease_seconds')
             if (topic && challenge && lease) {
-                await kv.set(['topic', decodeURI(topic)], parseInt(lease) + Math.floor(Date.now() / 1000))
+                await kv.set([
+                    'topic',
+                    new URL(decodeURI(topic)).searchParams.get('channel_id') ?? decodeURI(topic)
+                ], parseInt(lease) + Math.floor(Date.now() / 1000))
                 return new Response(challenge, {
                     status: 200,
                     headers: {
@@ -36,19 +39,19 @@ Deno.serve(async (req) => {
             console.log(`URL: ${req.url}`)
             try {
                 const body = await req.text()
-                const notification = parseNotification(xml.parse(body)['feed'])
-                console.log(`Channel Name: ${notification.channelName}`)
-                console.log(`Video URL: ${notification.videoUrl}`)
-                console.log(`Published: ${notification.published}`)
-                console.log(`Updated: ${notification.updated}`)
+                // const notification = parseNotification(xml.parse(body)['feed'])
+                // console.log(`Channel Name: ${notification.channelName}`)
+                // console.log(`Video URL: ${notification.videoUrl}`)
+                // console.log(`Published: ${notification.published}`)
+                // console.log(`Updated: ${notification.updated}`)
                 await fetch(webhook, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        content: `Video URL: ${notification.videoUrl}\nPublished: ${notification.published}\nUpdated: ${notification.updated}`,
-                        username: notification.channelName
+                        content: `\`\`\`json\n${JSON.stringify(xml.parse(body), null, 2)}\n\`\`\``,
+                        // username: notification.channelName
                     })
                 })
                 return new Response(null, { status: 200 })
