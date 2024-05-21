@@ -39,11 +39,10 @@ Deno.serve(async (req) => {
             console.log(`URL: ${req.url}`)
             try {
                 const body = await req.text()
-                // const notification = parseNotification(xml.parse(body)['feed'])
-                // console.log(`Channel Name: ${notification.channelName}`)
-                // console.log(`Video URL: ${notification.videoUrl}`)
-                // console.log(`Published: ${notification.published}`)
-                // console.log(`Updated: ${notification.updated}`)
+                const notification = parseNotification(xml.parse(body)['feed'])
+                console.log(`Channel Name: ${notification.channelName}`)
+                console.log(`Video URL: ${notification.videoUrl}`)
+                console.log(`Published: ${notification.published}`)
                 await fetch(webhook, {
                     method: 'POST',
                     headers: {
@@ -51,7 +50,7 @@ Deno.serve(async (req) => {
                     },
                     body: JSON.stringify({
                         content: `\`\`\`json\n${JSON.stringify(xml.parse(body), null, 2)}\n\`\`\``,
-                        // username: notification.channelName
+                        username: notification.channelName
                     })
                 })
                 return new Response(null, { status: 200 })
