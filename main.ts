@@ -82,7 +82,7 @@ Deno.cron('Update subscriptions', '0 0 * * *', async () => {
                 console.log(`Updating subscriptions for ${topic}`)
                 const form = new FormData()
                 form.set('hub.callback', callback)
-                form.set('hub.topic', topic)
+                form.set('hub.topic', `https://www.youtube.com/xml/feeds/videos.xml?channel_id=${topic}`)
                 form.set('hub.verify', 'async')
                 form.set('hub.mode','subscribe')
                 form.set('hub.verify_token', '')
