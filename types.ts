@@ -19,7 +19,7 @@ export interface _Notification {
 
 function isEntry(data: unknown): data is _Entry {
   return data !== null && typeof data === 'object' &&
-  'yt:video' in data && typeof data['yt:video'] === 'string' &&
+  'yt:videoId' in data && typeof data['yt:videoId'] === 'string' &&
   'yt:channelId' in data && typeof data['yt:channelId'] ==='string' &&
   'link' in data && typeof data.link === 'object' && data.link !== null &&
   '@href' in data.link && typeof data.link['@href'] === 'string' &&
